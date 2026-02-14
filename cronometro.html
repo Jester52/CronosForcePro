@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Cronómetro</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="statusIndicator" class="v-line hidden"></div>
+    <div id="homeTrigger" class="home-trigger"></div>
+
+    <div id="app">
+        <div id="settings" class="hidden">
+            <h3>Forzaje Rápido</h3>
+            <input type="text" id="forceValue" placeholder="12, 45, 99">
+            <button onclick="toggleSettings()">Guardar</button>
+        </div>
+
+        <div class="timer-display" id="display">00:00.<span class="ms">00</span></div>
+
+        <div class="controls">
+            <button id="lapBtn" class="btn secondary">Vuelta</button>
+            <button id="resetBtn" class="btn secondary_restart">Reiniciar</button>
+            <button id="startBtn" class="btn start">Iniciar</button>
+        </div>
+
+        <div class="laps-wrapper">
+            <ul id="lapsList" class="laps-container"></ul>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
