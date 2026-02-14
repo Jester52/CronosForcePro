@@ -9,12 +9,19 @@
     <link rel="apple-touch-icon" href="icon.png">
 <link rel="icon" type="image/png" href="icon.png">
 <meta name="theme-color" content="#000000">
-
 <script>
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => {
+          console.log('CronosForcePro activa');
+          // Esto ayuda a Chrome a mostrar el banner de instalación
+          reg.update();
+        });
+    });
   }
 </script>
+
 </head>
 <body>
     <div id="app" class="home-view">
