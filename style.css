@@ -1,5 +1,5 @@
 body {
-    background-color: #03020a;
+    background-color: #121212;
     color: #fff;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     margin: 0;
@@ -18,7 +18,7 @@ body {
     transform: translateX(-50%);
     width: 40px;
     height: 4px;
-    background-color: #333;
+    background-color: #3b3b3b;
     border-radius: 0 0 5px 5px;
     z-index: 10000;
 }
@@ -69,10 +69,10 @@ body {
     cursor: pointer;
 }
 
-.start { background-color: #1a3d1a; color: #30d158; }
-.stop { background-color: #3d1a1a; color: #CD1818; }
-.secondary { background-color: #333; color: #fff; }
-.secondary_restart { background-color: #2bced1; color: #0b0069; }
+.start { background-color: #006400; color: #ffffff; font-weight: bold}
+.stop { background-color: #d32f2f; color: #FFF; font-weight: bold}
+.secondary { background-color: #3f3f3f; color: #fff; font-weight: bold}
+.secondary_restart { background-color: #333; color: #ffffff; font-weight: bold}
 
 .laps-wrapper {
     width: 100%;
@@ -100,14 +100,14 @@ body {
     text-decoration: none; text-align: center; border: 1px solid #2c2c2e;
 }
 .home-btn_config {
-    background: #005B41; color: white; padding: 20px; border-radius: 15px;
-    text-decoration: none; text-align: center; border: 1px solid #2c2c2e;
+    background: #00BFA5; color: white; padding: 20px; border-radius: 15px;
+    text-decoration: none; text-align: center; border: 1px solid #2c2c2e;font-weight: bold
 }
 .home-btn_instruct {
-    background: #F39F5A; color: white; padding: 20px; border-radius: 15px;
-    text-decoration: none; text-align: center; border: 1px solid #2c2c2e;
+    background: #FFC107; color: white; padding: 20px; border-radius: 15px;
+    text-decoration: none; text-align: center; border: 1px solid #2c2c2e;font-weight: bold
 }
-.home-btn.primary { background: #30d158; color: #000; font-weight: bold; }
+.home-btn.primary { background: #006400; color: #fff; font-weight: bold; }
 
 .group-box { background: #1c1c1e; padding: 15px; border-radius: 15px; margin-bottom: 15px; width: 85%; }
 .group-box input { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; box-sizing: border-box; }

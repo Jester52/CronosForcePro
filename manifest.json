@@ -2,11 +2,10 @@
   "name": "CronosForcePro",
   "short_name": "CronosForce",
   "description": "Herramienta profesional de mentalismo",
-  "id": "/index.html",
-  "start_url": "./index.html",
+  "id": "/cronometro.html",
+  "start_url": "./cronometro.html",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
   "background_color": "#000000",
   "theme_color": "#000000",
   "icons": [
@@ -14,13 +13,13 @@
       "src": "icon.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "icon.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any"
     }
   ]
 }
