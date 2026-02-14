@@ -2,7 +2,7 @@
   "name": "CronosForcePro",
   "short_name": "CronosForce",
   "description": "Herramienta profesional de mentalismo",
-  "start_url": "./home.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
@@ -14,4 +14,5 @@
       "purpose": "any maskable"
     }
   ]
+
 }
