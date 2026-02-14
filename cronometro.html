@@ -5,19 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Cronómetro</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" type="image/png" href="icon.png">
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => {
+          console.log('CronosForcePro activa');
+          // Esto ayuda a Chrome a mostrar el banner de instalación
+          reg.update();
+        });
+    });
+  }
+</script>
 </head>
 <body>
-    <script>
-  if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('CronosForcePro: Registrada con éxito'))
-            .catch(err => console.log('Fallo en el registro', err));
-        });
-    }
-    </script>
-
-    <div id="statusIndicator" class="v-line hidden"></div>
+       <div id="statusIndicator" class="v-line hidden"></div>
     <div id="homeTrigger" class="home-trigger"></div>
 
     <div id="app">
