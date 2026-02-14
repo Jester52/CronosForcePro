@@ -7,6 +7,16 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <script>
+  if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('CronosForcePro: Registrada con éxito'))
+            .catch(err => console.log('Fallo en el registro', err));
+        });
+    }
+    </script>
+
     <div id="statusIndicator" class="v-line hidden"></div>
     <div id="homeTrigger" class="home-trigger"></div>
 
