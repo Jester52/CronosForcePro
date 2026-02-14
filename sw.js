@@ -10,7 +10,7 @@ const ASSETS = [
   './script.js',
   './config.js',
   './manifest.json',
-  './icon.jpg',
+  './icon.png',
   './sw.js'
 ];
 
@@ -41,4 +41,5 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(event.request).catch(() => caches.match(event.request))
   );
+
 });
