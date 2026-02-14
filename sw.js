@@ -1,8 +1,8 @@
-const CACHE_NAME = 'cronosforce-v1';
+const CACHE_NAME = 'cronosforce-v2'; // Incrementamos versión para forzar actualización
 
-// Lista de archivos para funcionamiento Offline
+// Lista exacta de archivos según tu carpeta
 const ASSETS = [
-  './home.html',
+  './cronometro.html',
   './index.html',
   './config.html',
   './instructions.html',
@@ -10,7 +10,8 @@ const ASSETS = [
   './script.js',
   './config.js',
   './manifest.json',
-  './icon.png'
+  './icon.jpg',
+  './sw.js'
 ];
 
 // Instalación
@@ -23,7 +24,7 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Activación y limpieza de versiones antiguas
+// Activación y limpieza
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -35,7 +36,7 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Estrategia: Red primero, si falla, Caché (Ideal para cambios de configuración)
+// Estrategia: Red primero, fallback a Caché
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(event.request).catch(() => caches.match(event.request))
