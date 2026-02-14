@@ -109,7 +109,7 @@ resetBtn.addEventListener('click', () => {
 });
 
 // 2. Navegación Secreta al Menú (Toque largo 2 segundos arriba)
-const homeTrigger = document.getElementById('homeTrigger');
+const homeTrigger = document.getElementById('indexTrigger');
 let homeHold;
 
 const goMenu = () => {
@@ -119,9 +119,9 @@ const goMenu = () => {
 homeTrigger.addEventListener('touchstart', (e) => {
     homeHold = setTimeout(goMenu, 2000);
 });
-homeTrigger.addEventListener('touchend', () => clearTimeout(homeHold));
-homeTrigger.addEventListener('mousedown', () => homeHold = setTimeout(goMenu, 2000));
-homeTrigger.addEventListener('mouseup', () => clearTimeout(homeHold));
+indexTrigger.addEventListener('touchend', () => clearTimeout(homeHold));
+indexTrigger.addEventListener('mousedown', () => homeHold = setTimeout(goMenu, 2000));
+indexTrigger.addEventListener('mouseup', () => clearTimeout(homeHold));
 
 // 3. Menú de Emergencia (Triple toque en los números)
 let displayClicks = 0;
