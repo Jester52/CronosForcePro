@@ -5,42 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Cronómetro</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="apple-touch-icon" href="icon.png">
-<link rel="icon" type="image/png" href="icon.png">
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => {
-          console.log('CronosForcePro activa');
-          // Esto ayuda a Chrome a mostrar el banner de instalación
-          reg.update();
-        });
-    });
-  }
-</script>
 </head>
 <body>
-       <div id="statusIndicator" class="v-line hidden"></div>
+    <div id="statusIndicator" class="v-line hidden"></div>
+    
     <div id="homeTrigger" class="home-trigger"></div>
 
     <div id="app">
-        <div id="settings" class="hidden">
-            <h3>Forzaje Rápido</h3>
-            <input type="text" id="forceValue" placeholder="12, 45, 99">
-            <button onclick="toggleSettings()">Guardar</button>
+        <div id="settings" class="hidden" style="position:fixed; top:30%; background:var(--card); padding:20px; border-radius:20px; z-index:11000; width:80%; text-align:center;">
+            <h3 style="margin-top:0">Forzaje Rápido</h3>
+            <input type="text" id="forceValue" placeholder="12, 45, 99" style="width:100%; padding:10px; background:#000; color:#fff; border:1px solid #444; border-radius:10px; margin-bottom:15px;">
+            <button onclick="toggleSettings()" style="width:100%; padding:10px; background:var(--green); border:none; border-radius:10px; font-weight:bold;">GUARDAR</button>
         </div>
 
         <div class="timer-display" id="display">00:00.<span class="ms">00</span></div>
 
         <div class="controls">
             <button id="lapBtn" class="btn secondary">Vuelta</button>
-            <button id="resetBtn" class="btn secondary_restart">Reiniciar</button>
             <button id="startBtn" class="btn start">Iniciar</button>
         </div>
 
         <div class="laps-wrapper">
-            <ul id="lapsList" class="laps-container"></ul>
+            <div id="lapsList"></div>
         </div>
     </div>
     <script src="script.js"></script>

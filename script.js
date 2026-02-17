@@ -1,45 +1,33 @@
-// --- CARGA INICIAL DE CONFIGURACIÓN ---
-window.addEventListener('load', () => {
-    const savedForce = localStorage.getItem('activeGroup');
-    if (savedForce) {
-        forcedList = savedForce.split(',').map(n => n.trim().padStart(2, '0'));
-        if (forceInput) forceInput.value = savedForce; 
-        console.log("Forzaje cargado:", forcedList);
-    }
-});
-
+// --- CARGA INICIAL Y VARIABLES ---
 let startTime, elapsedTime = 0, timerInterval;
 let isRunning = false;
 let isForced = false;
 let forcedList = []; 
 let currentForceIndex = 0; 
 let displayTapCount = 0; 
-let resetBtnTapCount = 0; 
 let lapCount = 0;
 let homeHold; 
+let lastCenterTap = 0;
 
 const display = document.getElementById('display');
 const startBtn = document.getElementById('startBtn');
 const lapBtn = document.getElementById('lapBtn');
-const resetBtn = document.getElementById('resetBtn');
 const lapsList = document.getElementById('lapsList');
 const forceInput = document.getElementById('forceValue');
 const settingsMenu = document.getElementById('settings');
 const statusIndicator = document.getElementById('statusIndicator');
 const homeTrigger = document.getElementById('homeTrigger'); 
+const trickTrigger = document.querySelector('.controls'); 
 
-// Actualiza el indicador visual para el mago (línea gris)
-function updateSecretUI() {
-    if (statusIndicator) {
-        if (isForced) {
-            statusIndicator.classList.remove('hidden');
-        } else {
-            statusIndicator.classList.add('hidden');
-        }
+window.addEventListener('load', () => {
+    const savedForce = localStorage.getItem('activeGroup');
+    if (savedForce) {
+        forcedList = savedForce.split(',').map(n => n.trim().padStart(2, '0'));
     }
-}
+    updateButtonsUI();
+});
 
-// --- LÓGICA DE FORZAJE CON AGOTAMIENTO ---
+// --- LÓGICA DE FORZAJE ---
 function getNextForcedValue(realCents) {
     if (isForced && forcedList.length > 0 && currentForceIndex < forcedList.length) {
         let val = forcedList[currentForceIndex];
@@ -50,131 +38,161 @@ function getNextForcedValue(realCents) {
     return realCents; 
 }
 
-// --- NAVEGACIÓN SECRETA (Toque Largo 2s para ir a INDEX.HTML) ---
-const goToIndex = () => {
-    // Corregido: Ahora apunta a index.html
-    window.location.href = 'index.html';
-};
-
-if (homeTrigger) {
-    homeTrigger.addEventListener('mousedown', () => homeHold = setTimeout(goToIndex, 2000));
-    homeTrigger.addEventListener('mouseup', () => clearTimeout(homeHold));
-    homeTrigger.addEventListener('mouseleave', () => clearTimeout(homeHold));
-    homeTrigger.addEventListener('touchstart', (e) => {
-        homeHold = setTimeout(goToIndex, 2000);
-    });
-    homeTrigger.addEventListener('touchend', () => clearTimeout(homeHold));
+function updateSecretUI() {
+    if (statusIndicator) {
+        isForced ? statusIndicator.classList.remove('hidden') : statusIndicator.classList.add('hidden');
+    }
 }
 
-// --- TRIPLE TOQUE EN EL TIEMPO PARA CONFIGURACIÓN RÁPIDA ---
+// --- TRANSFORMACIÓN VISUAL ---
+function updateButtonsUI() {
+    if (isRunning) {
+        startBtn.innerText = "Detener";
+        startBtn.className = "btn stop"; 
+        lapBtn.innerText = "Vuelta";
+    } else {
+        startBtn.innerText = "Iniciar";
+        startBtn.className = "btn start";
+        lapBtn.innerText = (elapsedTime > 0) ? "Reiniciar" : "Vuelta";
+    }
+}
+
+// --- EL DISPARADOR DEL TRUCO (DOBLE TOQUE AL CENTRO) ---
+trickTrigger.addEventListener('click', (e) => {
+    // Si el clic NO fue en el botón de Iniciar y NO fue en el de Vuelta
+    // entonces fue en el espacio intermedio (el área mágica)
+    if (e.target !== startBtn && e.target !== lapBtn) {
+        let now = Date.now();
+        let timesince = now - lastCenterTap;
+
+        if (timesince < 400 && timesince > 0) { // Subimos a 400ms para que sea más fácil
+            isForced = !isForced;
+            updateSecretUI(); 
+            
+            if (navigator.vibrate) navigator.vibrate(60); 
+            console.log("Magia activada:", isForced);
+            
+            lastCenterTap = 0;
+        } else {
+            lastCenterTap = now;
+        }
+    }
+});
+
+// --- BOTÓN DERECHO: INICIAR / DETENER ---
+startBtn.addEventListener('click', (e) => {
+    e.stopPropagation(); 
+    if (!isRunning) {
+        // INICIAR
+        startTime = Date.now() - elapsedTime;
+        timerInterval = setInterval(updateTime, 10);
+        isRunning = true;
+    } else {
+        // DETENER
+        clearInterval(timerInterval);
+        isRunning = false;
+        
+        // --- LÓGICA MÁGICA CON SEGURIDAD DE 3 SEGUNDOS ---
+        // Solo fuerza si: el modo está activo Y han pasado más de 3000ms (3s)
+        if (isForced && elapsedTime > 3000) {
+            let parts = display.innerText.split('.'); 
+            let forcedCents = getNextForcedValue(parts[1]);
+            display.innerHTML = `${parts[0]}.<span class="ms">${forcedCents}</span>`;
+            
+            // Si se agotan los números de la lista, desactivar modo
+            if (currentForceIndex >= forcedList.length) {
+                isForced = false;
+                updateSecretUI();
+            }
+        } else {
+            // Si se detiene antes de los 3s, el número permanece real
+            console.log("Detenido antes de 3s: Forzaje ignorado por seguridad.");
+        }
+    }
+    updateButtonsUI(); 
+});
+
+// --- BOTÓN IZQUIERDO: VUELTA / REINICIAR ---
+lapBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (isRunning) {
+        // MODO VUELTA CON FORZAJE
+        lapCount++;
+        let parts = display.innerText.split('.');
+        let finalCents = getNextForcedValue(parts[1]);
+        
+        const li = document.createElement('li');
+        li.className = 'lap-item';
+        li.innerHTML = `<span>Vuelta ${lapCount}</span> <span>${parts[0]}.${finalCents}</span>`;
+        lapsList.prepend(li);
+    } else {
+        // MODO REINICIAR
+        if (elapsedTime > 0) {
+            resetTimer();
+            updateButtonsUI();
+        }
+    }
+});
+
+// --- FUNCIONES CORE ---
+function resetTimer() {
+    elapsedTime = 0;
+    lapCount = 0;
+    currentForceIndex = 0;
+    isForced = false;
+    display.innerHTML = `00:00.<span class="ms">00</span>`;
+    if (lapsList) lapsList.innerHTML = "";
+    updateSecretUI();
+}
+
+function updateTime() {
+    elapsedTime = Date.now() - startTime;
+    let date = new Date(elapsedTime);
+    let m = String(date.getUTCMinutes()).padStart(2, '0');
+    let s = String(date.getUTCSeconds()).padStart(2, '0');
+    let ms = String(Math.floor(date.getUTCMilliseconds() / 10)).padStart(2, '0');
+    display.innerHTML = `${m}:${s}.<span class="ms">${ms}</span>`;
+}
+
+// --- NAVEGACIÓN SECRETA REFORZADA ---
+const homeTriggerArea = document.getElementById('homeTrigger') || document.getElementById('statusIndicator');
+
+if (homeTriggerArea) {
+    const startHolding = () => {
+        homeHold = setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 1500); // 1.5 segundos para salir
+    };
+
+    const stopHolding = () => clearTimeout(homeHold);
+
+    // Eventos para Móvil
+    homeTriggerArea.addEventListener('touchstart', (e) => {
+        if (e.cancelable) e.preventDefault(); // Evita zoom o scroll
+        startHolding();
+    }, { passive: false });
+    
+    homeTriggerArea.addEventListener('touchend', stopHolding);
+
+    // Eventos para PC (por si pruebas en el navegador)
+    homeTriggerArea.addEventListener('mousedown', startHolding);
+    homeTriggerArea.addEventListener('mouseup', stopHolding);
+    homeTriggerArea.addEventListener('mouseleave', stopHolding);
+}
+
 display.addEventListener('click', () => {
     displayTapCount++;
     if (displayTapCount === 3) {
-        if (settingsMenu) settingsMenu.classList.toggle('hidden');
+        settingsMenu.classList.toggle('hidden');
         displayTapCount = 0;
     }
     setTimeout(() => displayTapCount = 0, 500);
 });
 
 function toggleSettings() {
-    if (forceInput && forceInput.value !== "") {
+    if (forceInput.value !== "") {
         forcedList = forceInput.value.split(',').map(n => n.trim().padStart(2, '0'));
         currentForceIndex = 0;
     }
-    if (settingsMenu) settingsMenu.classList.add('hidden');
-}
-
-// --- BOTÓN INICIAR / DETENER ---
-startBtn.addEventListener('click', () => {
-    if (!isRunning) {
-        startTime = Date.now() - elapsedTime;
-        timerInterval = setInterval(updateTime, 10);
-        isRunning = true;
-        startBtn.innerText = "Detener";
-        startBtn.className = "btn stop";
-    } else {
-        clearInterval(timerInterval);
-        isRunning = false;
-        
-        if (isForced && elapsedTime > 1000) {
-            let currentTimeStr = display.innerText.split('.'); 
-            let forcedCents = getNextForcedValue(currentTimeStr[1]);
-            display.innerHTML = `${currentTimeStr[0]}.<span class="ms">${forcedCents}</span>`;
-            
-            if (currentForceIndex >= forcedList.length) {
-                isForced = false;
-                updateSecretUI();
-            }
-        }
-        startBtn.innerText = "Iniciar";
-        startBtn.className = "btn start";
-    }
-});
-
-// --- BOTÓN VUELTA ---
-lapBtn.addEventListener('click', () => {
-    if (isRunning) {
-        lapCount++;
-        let currentTime = display.innerText; 
-        let parts = currentTime.split('.');
-        
-        let finalCents = getNextForcedValue(parts[1]);
-        let timeToShow = `${parts[0]}.${finalCents}`;
-
-        if (lapsList) {
-            const li = document.createElement('li');
-            li.className = 'lap-item';
-            li.innerHTML = `<span class="lap-number">Vuelta ${lapCount}</span> <span class="lap-time">${timeToShow}</span>`;
-            lapsList.prepend(li);
-        }
-    }
-});
-
-// --- BOTÓN REINICIAR ---
-resetBtn.addEventListener('click', () => {
-    resetBtnTapCount++;
-    if (resetBtnTapCount === 1) {
-        setTimeout(() => {
-            if (resetBtnTapCount === 1) {
-                if (!isRunning) resetTimer();
-            } else if (resetBtnTapCount === 2) {
-                isForced = !isForced;
-                updateSecretUI();
-                if (navigator.vibrate) navigator.vibrate(60); 
-            }
-            resetBtnTapCount = 0; 
-        }, 300); 
-    }
-});
-
-function resetTimer() {
-    elapsedTime = 0;
-    lapCount = 0;
-    currentForceIndex = 0;
-    display.innerHTML = `00:00.<span class="ms">00</span>`;
-    if (lapsList) lapsList.innerHTML = "";
-    isForced = false; 
-    updateSecretUI();
-}
-
-function updateTime() {
-    elapsedTime = Date.now() - startTime;
-    display.innerHTML = formatTime(elapsedTime);
-}
-
-function formatTime(time) {
-    let date = new Date(time);
-    let m = String(date.getUTCMinutes()).padStart(2, '0');
-    let s = String(date.getUTCSeconds()).padStart(2, '0');
-    let ms = String(Math.floor(date.getUTCMilliseconds() / 10)).padStart(2, '0');
-    return `${m}:${s}.<span class="ms">${ms}</span>`;
-}
-
-// --- REGISTRO DEL SERVICE WORKER (Para Android) ---
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('CronosForcePro: Service Worker registrado'))
-            .catch(err => console.log('Error al registrar SW:', err));
-    });
+    settingsMenu.classList.add('hidden');
 }

@@ -3,112 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Instrucciones CronosForcePro</title>
+    <title>Instrucciones</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="apple-touch-icon" href="icon.png">
-<link rel="icon" type="image/png" href="icon.png">
-    <style>
-        /* Sobreescribimos el bloqueo de scroll del body solo para esta página */
-        body {
-            overflow-y: auto !important;
-            display: block !important;
-        }
-
-        #app.inst-view {
-            display: block !important;
-            height: auto !important;
-            min-height: 100vh;
-            padding-top: 20px;
-            padding-bottom: 50px;
-            justify-content: flex-start !important;
-            overflow-y: visible !important;
-        }
-
-        .inst-container {
-            padding: 20px;
-            text-align: left;
-            width: 90%;
-            max-width: 450px;
-            margin: 0 auto;
-        }
-
-        h2 { color: #30d158; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; }
-        h4 { color: #30d158; margin-top: 25px; margin-bottom: 10px; text-transform: uppercase; font-size: 14px; letter-spacing: 1px; }
-        p, li { color: #ccc; font-size: 15px; line-height: 1.6; margin-bottom: 12px; }
-        
-        .code-box { 
-            background: #1c1c1e; 
-            padding: 15px; 
-            border-radius: 12px; 
-            border-left: 4px solid #30d158; 
-            margin: 15px 0; 
-        }
-
-        b { color: #fff; }
-        ul { padding-left: 20px; }
-        
-        .back-link { 
-            display: block; 
-            text-align: center; 
-            margin-top: 40px; 
-            color: #888; 
-            text-decoration: none; 
-            padding: 15px;
-            border: 1px solid #333;
-            border-radius: 10px;
-            transition: 0.3s;
-        }
-        
-        .back-link:active {
-            background: #1c1c1e;
-            color: #fff;
-        }
-    </style>
 </head>
-<body>
-    <div id="app" class="inst-view">
-        <div class="inst-container">
-            <h2>Manual de Usuario</h2>
-            
-            <p>CronosForcePro es un cronómetro diseñado para mentalismo que permite forzar resultados decimales de forma indetectable.</p>
-
-            <h4>1. Configuración de Rutinas</h4>
-            <p>En el menú <b>Configuración</b> puedes gestionar 3 grupos:</p>
-            <ul>
-                <li><b>Renombrar:</b> Toca el nombre en verde para personalizar la rutina (ej: "Doble de Picas").</li>
-                <li><b>Decimales:</b> Ingresa los números que quieres que aparezcan (ej: 12, 45, 08).</li>
-                <li><b>Guardar:</b> Almacena los cambios en la memoria del teléfono.</li>
-                <li><b>Usar Ahora:</b> Activa esa rutina específica para ser usada en el cronómetro.</li>
-            </ul>
-
-            <h4>2. Comandos Secretos (Cronómetro)</h4>
-            <div class="code-box">
-                <b>Activar Modo Truco:</b> Haz un <u>doble toque</u> rápido en <b>Reiniciar</b>. Vibrará y aparecerá una línea gris sutil en el borde superior.
-            </div>
-            
-            <div class="code-box">
-                <b>Forzar Resultados:</b> Con el modo activo, al pulsar <b>Vuelta</b> o <b>Detener</b>, el sistema mostrará el siguiente decimal de tu lista.
-            </div>
-
-            <div class="code-box">
-                <b>Agotamiento:</b> Si se acaban tus números, el cronómetro seguirá funcionando con decimales reales. La línea gris desaparecerá sola.
-            </div>
-
-            <div class="code-box">
-                <b>Acceso Rápido:</b> Haz un <u>triple toque</u> sobre el tiempo principal para abrir el panel de cambio manual de decimales.
-            </div>
-
-            <h4>3. Salida Invisible</h4>
-            <div class="code-box">
-                <b>Regreso al Home:</b> Mantén presionado por 2 segundos el <b>área invisible superior</b> (justo debajo de la línea gris) para volver al menú principal.
-            </div>
-
-            <h4>4. Recomendaciones</h4>
-            <p>• Usa la opción <b>"Añadir a pantalla de inicio"</b> en Safari/Chrome para que la app se vea a pantalla completa.</p>
-            <p>• Practica el ritmo de los botones para que el forzaje parezca un tiempo de reacción natural.</p>
-
-            <a href="index.html" class="back-link">← Volver al Menú Principal</a>
+<body class="bg-menu">
+    <div id="app" class="scrollable-view">
+        <h2 style="color: var(--green); text-align: center;">MANUAL CRONOSFORCE</h2>
+        
+        <div class="group-box">
+            <h3 style="margin-top:0">1. Preparación</h3>
+            <p>Ve a <b>Configuración</b> y guarda tus números separados por comas. Elige la rutina y dale a <b>"USAR AHORA"</b>.</p>
         </div>
+
+        <div class="group-box">
+            <h3>2. Activación del Truco</h3>
+            <p>En el cronómetro, haz <b>DOBLE TOQUE</b> rápido en el botón <b>INICIAR/DETENER</b> (o en el área de controles). Si lo haces bien, aparecerá una línea gris casi invisible arriba.</p>
+        </div>
+
+        <div class="group-box">
+            <h3>3. El Forzaje</h3>
+            <p>Con el truco activo, cada vez que presiones <b>VUELTA</b> o <b>DETENER</b>, el cronómetro mostrará los decimales de tu lista en orden.</p>
+        </div>
+
+        <div class="group-box">
+            <h3>4. Salida Secreta</h3>
+            <p>Para volver al menú principal sin que nadie lo note, <b>MANTÉN PRESIONADA</b> la parte superior de la pantalla (área de la línea gris) durante 2 segundos.</p>
+        </div>
+<br>
+        <a href="index.html" class="home-btn" style="margin-bottom: 40px;">ENTENDIDO</a>
     </div>
 </body>
 </html>

@@ -3,59 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Configuración</title>
+    <title>Configuración - CronosForce</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="apple-touch-icon" href="icon.png">
-<link rel="icon" type="image/png" href="icon.png">
-    <style>
-        .name-input {
-            border: none !important;
-            background: transparent !important;
-            color: #30d158 !important;
-            font-weight: bold !important;
-            font-size: 16px !important;
-            margin-bottom: 5px !important;
-            padding: 0 !important;
-            text-align: left !important;
-        }
-        .group-box { margin-bottom: 25px; }
-        .button-row { display: flex; gap: 10px; margin-top: 10px; }
-        .btn-secondary { background: #333; color: white; }
-    </style>
 </head>
 <body>
-    <div id="app" class="config-view">
-        <h3 style="margin-bottom: 30px;">Gestión de Rutinas</h3>
+    <div id="app" class="scroll-view">
+        <h2 style="text-align: center; margin-bottom: 30px; letter-spacing: 1px;">RUTINAS</h2>
         
-        <div class="group-box">
-            <input type="text" id="n1" class="name-input" placeholder="Nombre Grupo 1">
-            <input type="text" id="g1" placeholder="Decimales (ej: 12, 45)">
-            <div class="button-row">
-                <button class="save-btn btn-secondary" onclick="saveOnly(1)">GUARDAR</button>
-                <button class="save-btn" onclick="activateGroup(1)">USAR AHORA</button>
-            </div>
-        </div>
+        <div id="groupsContainer"></div>
 
-        <div class="group-box">
-            <input type="text" id="n2" class="name-input" placeholder="Nombre Grupo 2">
-            <input type="text" id="g2" placeholder="Decimales (ej: 88, 99)">
-            <div class="button-row">
-                <button class="save-btn btn-secondary" onclick="saveOnly(2)">GUARDAR</button>
-                <button class="save-btn" onclick="activateGroup(2)">USAR AHORA</button>
-            </div>
-        </div>
+        <button onclick="addNewGroup()" class="home-btn home-btn_instruct" >
+            + AÑADIR NUEVA RUTINA
+        </button>
 
-        <div class="group-box">
-            <input type="text" id="n3" class="name-input" placeholder="Nombre Grupo 3">
-            <input type="text" id="g3" placeholder="Decimales (ej: 05, 10)">
-            <div class="button-row">
-                <button class="save-btn btn-secondary" onclick="saveOnly(3)">GUARDAR</button>
-                <button class="save-btn" onclick="activateGroup(3)">USAR AHORA</button>
-            </div>
-        </div>
-
-        <a href="index.html" class="back-link">Volver al Menú</a>
-    </div>
+        <a href="index.html" class="home-btn" style="margin-top: 30px;">VOLVER AL MENÚ</a>
+        <div style="height: 60px;"></div> </div>
     <script src="config.js"></script>
 </body>
-</html>
+</html> 

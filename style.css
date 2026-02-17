@@ -1,130 +1,272 @@
+/* =========================================
+   1. VARIABLES Y CONFIGURACIÓN BASE
+   ========================================= */
+:root {
+    --bg: #000000;
+    --card: rgba(255, 255, 255, 0.06)
+    ;
+    --green: #30d158;
+    --red: #ff453a;
+    --gray: #333333;
+    --text: #ffffff;
+    --border: rgba(255, 255, 255, 0.12);
+    --purpple: #1B143F;
+
+
+    /*test*/
+/* 🟢 BOTÓN VERDE */
+  --btn-green: 
+    linear-gradient(135deg, #22c55e, #16a34a),
+    #ecfdf5,
+    0 0 20px rgba(34, 197, 94, 0.6);
+
+  /* 🔴 BOTÓN ROJO */
+  --btn-red:
+    linear-gradient(135deg, #ef4444, #b91c1c),
+    #fee2e2,
+    0 0 18px rgba(239, 68, 68, 0.6);
+
+  /* 🔵 BOTÓN AZUL */
+  --btn-blue:
+    linear-gradient(135deg, #3b82f6, #1d4ed8),
+    #eff6ff,
+    0 0 14px rgba(59,130,246,0.5);
+
+}
+
 body {
-    background-color: #121212;
-    color: #fff;
+    background-color: var(--bg);
+    color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     margin: 0;
+    height: 100vh;
     display: flex;
     justify-content: center;
-    height: 100vh;
-    overflow: hidden;
+    overflow: hidden; /* Evita rebotes y scroll global */
     user-select: none;
-}
-
-/* Indicador y Trigger */
-.v-line {
-    position: fixed;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 40px;
-    height: 4px;
-    background-color: #3b3b3b;
-    border-radius: 0 0 5px 5px;
-    z-index: 10000;
-}
-
-.home-trigger {
-    position: fixed;
-    top: 0;
-    left: 25%;
-    width: 50%;
-    height: 60px; /* Área táctil generosa pero invisible */
-    z-index: 9999;
-    background: transparent;
+    -webkit-tap-highlight-color: transparent;
 }
 
 #app {
     width: 100%;
     max-width: 500px;
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 60px;
+    position: relative;
 }
 
+/* =========================================
+   2. MENÚ PRINCIPAL (index.html) - CENTRADO
+   ========================================= */
+.home-view {
+    justify-content: center !important; /* Centrado vertical absoluto */
+    padding-top: 0 !important;
+}
+
+.logo {
+    font-size: 32px;
+    font-weight: 800;
+    margin-top: 70px;
+    margin-bottom: 60px;
+    color: var(--text);
+    letter-spacing: 3px;
+    text-align: center;
+    text-decoration: none;
+}
+
+.home-container {
+    width: 85%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.home-btn {
+    background: #07E092;
+    color: #fff;
+    padding: 25px; /* Botones grandes */
+    border-radius: 20px;
+    text-align: center;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 20px;
+    border: 1px solid var(--border);
+    transition: transform 0.1s, background 0.2s;
+}
+
+
+.home-btn:active {
+    transform: scale(0.96);
+}
+
+.home-btn.primary { background: var(--gray); }
+.home-btn_config { background:#3D4ABA; color: white; border: none; }
+.home-btn_instruct { background: #FFC107; color: black; border: none; }
+
+/* =========================================
+   3. CRONÓMETRO Y VUELTAS (Elegancia iOS)
+   ========================================= */
 .timer-display {
-    font-size: 80px;
+    font-size: 88px;
     font-weight: 200;
-    margin-bottom: 30px;
+    margin: 80px 0 40px 0;
     font-variant-numeric: tabular-nums;
-    cursor: pointer;
+    letter-spacing: -2px;
 }
 
-.ms { font-size: 60px; color: #ccc; }
+.ms { font-size: 65px; color: #888; }
 
 .controls {
     display: flex;
-    justify-content: center;
-    gap: 15px;
+    justify-content: space-around;
     width: 100%;
-    margin-bottom: 20px;
+    padding-bottom: 30px;
+    border-bottom: 0.5px solid var(--gray);
 }
 
 .btn {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: none;
-    font-size: 14px;
-    cursor: pointer;
+    width: 85px; height: 85px;
+    border-radius: 50%; border: none;
+    font-size: 18px; font-weight: 400;
+    display: flex; align-items: center; justify-content: center;
 }
-
-.start { background-color: #006400; color: #ffffff; font-weight: bold}
-.stop { background-color: #d32f2f; color: #FFF; font-weight: bold}
-.secondary { background-color: #3f3f3f; color: #fff; font-weight: bold}
-.secondary_restart { background-color: #333; color: #ffffff; font-weight: bold}
+.start { background: #1a331f; color: var(--green); }
+.stop { background: #320e0b; color: var(--red); }
+.secondary { background: var(--gray); color: #fff; }
 
 .laps-wrapper {
     width: 100%;
-    flex-grow: 1;
+    flex: 1;
     overflow-y: auto;
-    border-top: 0.5px solid #333;
+    -webkit-overflow-scrolling: touch;
 }
 
 .lap-item {
     display: flex;
     justify-content: space-between;
-    padding: 15px 25px;
+    padding: 18px 25px;
     border-bottom: 0.5px solid #222;
-    font-size: 20px;
+    font-size: 22px; /* Laps grandes y legibles */
+    font-variant-numeric: tabular-nums;
 }
 
 .lap-number { color: #888; }
 
-/* Vistas de Menú */
-.home-view, .config-view { justify-content: center !important; padding-top: 0 !important; }
-.logo { font-size: 42px; letter-spacing: 5px; margin-bottom: 50px; font-weight: 200; }
-.home-container { display: flex; flex-direction: column; gap: 15px; width: 85%; }
-.home-btn {
-    background: #1c1c1e; color: white; padding: 20px; border-radius: 15px;
-    text-decoration: none; text-align: center; border: 1px solid #2c2c2e;
-}
-.home-btn_config {
-    background: #00BFA5; color: white; padding: 20px; border-radius: 15px;
-    text-decoration: none; text-align: center; border: 1px solid #2c2c2e;font-weight: bold
-}
-.home-btn_instruct {
-    background: #FFC107; color: white; padding: 20px; border-radius: 15px;
-    text-decoration: none; text-align: center; border: 1px solid #2c2c2e;font-weight: bold
-}
-.home-btn.primary { background: #006400; color: #fff; font-weight: bold; }
-
-.group-box { background: #1c1c1e; padding: 15px; border-radius: 15px; margin-bottom: 15px; width: 85%; }
-.group-box input { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; box-sizing: border-box; }
-.save-btn { border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; }
-.hidden { display: none !important; }
-#settings { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1c1c1e; padding: 25px; border-radius: 20px; z-index: 11000; width: 80%; text-align: center; }
-
-/*instrucciones*/
-
-/* Permitir scroll solo en instrucciones */
-.inst-view {
+/* =========================================
+   4. CONFIGURACIÓN E INSTRUCCIONES (SCROLLABLE)
+   ========================================= */
+.scrollable-view {
+    display: block !important;
     overflow-y: auto !important;
-    display: block !important; /* Cambiamos flex por block para el flujo de texto */
-    height: 100vh;
+    padding: 20px;
+    padding-top: 60px !important;
+    height: 100vh !important;
+    box-sizing: border-box;
 }
 
-/* Ajuste para que el contenedor no quede pegado a los bordes */
-.inst-container {
-    padding: 30px 20px 80px 20px; /* Más espacio abajo para no tapar el link de volver */
+.group-box {
+    background: var(--card);
+    padding: 20px;
+    border-radius: 18px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+}
+
+.group-box input {
+    width: 100%;
+    padding: 15px;
+    background: #000;
+    border: 1px solid var(--gray);
+    color: #fff;
+    border-radius: 12px;
+    margin-top: 10px;
+    font-size: 17px;
+    box-sizing: border-box;
+}
+
+.name-input {
+    border: none !important;
+    background: transparent !important;
+    color: var(--green) !important;
+    font-weight: bold !important;
+    font-size: 18px !important;
+    padding: 0 !important;
+}
+
+.button-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.save-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    background: var(--green);
+    color: #000;
+}
+
+.btn-secondary { background: var(--gray); color: #fff; }
+
+/* =========================================
+   5. NOTIFICACIÓN TOAST (FLOTANTE E INDEPENDIENTE)
+   ========================================= */
+.toast-msg {
+    position: fixed;
+    bottom: -100px; /* Escondido abajo */
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(45, 45, 45, 0.98);
+    color: white;
+    padding: 15px 30px;
+    border-radius: 30px;
+    font-size: 15px;
+    font-weight: 500;
+    z-index: 999999;
+    transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+    opacity: 0;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    border: 1px solid #444;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.toast-msg.show {
+    bottom: 50px; /* Sube flotando */
+    opacity: 1;
+}
+
+/* =========================================
+   6. INTERFAZ SECRETA Y OTROS
+   ========================================= */
+.v-line {
+    position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+    width: 45px; height: 4px; background: #3b3b3b;
+    border-radius: 0 0 5px 5px; z-index: 10000;
+}
+
+.home-trigger {
+    position: fixed; top: 0; left: 0; width: 100%; height: 60px;
+    z-index: 10001; background: transparent;
+}
+
+#settings {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: var(--card); padding: 25px; border-radius: 20px;
+    z-index: 11000; width: 85%; text-align: center;
+    box-shadow: 0 0 50px rgba(0,0,0,0.9);
+}
+
+.hidden { display: none !important; }
+
+
+.bg-menu {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
 }
