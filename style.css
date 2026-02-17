@@ -2,9 +2,8 @@
    1. VARIABLES Y CONFIGURACIÓN BASE
    ========================================= */
 :root {
-    --bg: #000000;
-    --card: rgba(255, 255, 255, 0.06)
-    ;
+    --bg: #121212;
+    --card: rgba(255, 255, 255, 0.06);
     --green: #30d158;
     --red: #ff453a;
     --gray: #333333;
@@ -12,26 +11,10 @@
     --border: rgba(255, 255, 255, 0.12);
     --purpple: #1B143F;
 
-
-    /*test*/
-/* 🟢 BOTÓN VERDE */
-  --btn-green: 
-    linear-gradient(135deg, #22c55e, #16a34a),
-    #ecfdf5,
-    0 0 20px rgba(34, 197, 94, 0.6);
-
-  /* 🔴 BOTÓN ROJO */
-  --btn-red:
-    linear-gradient(135deg, #ef4444, #b91c1c),
-    #fee2e2,
-    0 0 18px rgba(239, 68, 68, 0.6);
-
-  /* 🔵 BOTÓN AZUL */
-  --btn-blue:
-    linear-gradient(135deg, #3b82f6, #1d4ed8),
-    #eff6ff,
-    0 0 14px rgba(59,130,246,0.5);
-
+    /* TUS GRADIENTES PERSONALIZADOS */
+    --btn-green: linear-gradient(135deg, #22c55e, #16a34a);
+    --btn-red: linear-gradient(135deg, #ef4444, #b91c1c);
+    --btn-blue: linear-gradient(135deg, #3b82f6, #1d4ed8);
 }
 
 body {
@@ -40,13 +23,42 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     margin: 0;
     height: 100vh;
+    width: 100vw;
     display: flex;
     justify-content: center;
-    overflow: hidden; /* Evita rebotes y scroll global */
+    overflow: hidden; /* Evita rebotes del sistema */
     user-select: none;
     -webkit-tap-highlight-color: transparent;
 }
 
+/* =========================================
+   2. NAVEGACIÓN SECRETA (Home Trigger)
+   ========================================= */
+.home-trigger {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    z-index: 100000; /* Prioridad máxima sobre cualquier scroll */
+    background: transparent;
+}
+
+.v-line {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    background-color: #3b3b3b;
+    border-radius: 0 0 5px 5px;
+    z-index: 100001;
+}
+
+/* =========================================
+   3. ESTRUCTURA APP Y SCROLL
+   ========================================= */
 #app {
     width: 100%;
     max-width: 500px;
@@ -55,25 +67,42 @@ body {
     flex-direction: column;
     align-items: center;
     position: relative;
+    box-sizing: border-box;
+}
+
+/* Clase maestra para Config e Instrucciones */
+.scrollable-view {
+    display: block !important; /* Permite flujo vertical */
+    overflow-y: auto !important; /* Habilita scroll */
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    padding-top: 80px !important; /* Espacio para trigger secreto */
+    box-sizing: border-box;
+}
+
+/* Espacio final para que el scroll no corte el último botón */
+.scrollable-view::after {
+    content: "";
+    display: block;
+    height: 100px;
 }
 
 /* =========================================
-   2. MENÚ PRINCIPAL (index.html) - CENTRADO
+   4. MENÚ PRINCIPAL (index.html)
    ========================================= */
 .home-view {
-    justify-content: center !important; /* Centrado vertical absoluto */
-    padding-top: 0 !important;
+    justify-content: center !important;
 }
 
 .logo {
     font-size: 32px;
     font-weight: 800;
-    margin-top: 70px;
-    margin-bottom: 60px;
-    color: var(--text);
+    margin-bottom: 50px;
     letter-spacing: 3px;
     text-align: center;
-    text-decoration: none;
+    text-decoration: underline;
 }
 
 .home-container {
@@ -83,37 +112,30 @@ body {
     gap: 20px;
 }
 
-.home-btn {
-    background: #07E092;
-    color: #fff;
-    padding: 25px; /* Botones grandes */
-    border-radius: 20px;
+.home-btn, .home-btn_config, .home-btn_instruct {
+    padding: 22px;
+    border-radius: 18px;
     text-align: center;
     font-weight: bold;
     text-decoration: none;
-    font-size: 20px;
+    font-size: 19px;
     border: 1px solid var(--border);
-    transition: transform 0.1s, background 0.2s;
+    transition: transform 0.1s;
 }
 
-
-.home-btn:active {
-    transform: scale(0.96);
-}
-
-.home-btn.primary { background: var(--gray); }
-.home-btn_config { background:#3D4ABA; color: white; border: none; }
+.home-btn:active { transform: scale(0.97); }
+.home-btn.primary { background: var(--card); color: white; }
+.home-btn_config { background: var(--btn-blue); color: white; border: none; }
 .home-btn_instruct { background: #FFC107; color: black; border: none; }
 
 /* =========================================
-   3. CRONÓMETRO Y VUELTAS (Elegancia iOS)
+   5. CRONÓMETRO (cronometro.html)
    ========================================= */
 .timer-display {
     font-size: 88px;
     font-weight: 200;
     margin: 80px 0 40px 0;
     font-variant-numeric: tabular-nums;
-    letter-spacing: -2px;
 }
 
 .ms { font-size: 65px; color: #888; }
@@ -129,41 +151,39 @@ body {
 .btn {
     width: 85px; height: 85px;
     border-radius: 50%; border: none;
-    font-size: 18px; font-weight: 400;
-    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; display: flex; align-items: center; justify-content: center;
 }
-.start { background: #1a331f; color: var(--green); }
-.stop { background: #320e0b; color: var(--red); }
+
+.start { background: var(--btn-green); color: white; }
+.stop { background: var(--btn-red); color: white; }
 .secondary { background: var(--gray); color: #fff; }
 
 .laps-wrapper {
     width: 100%;
     flex: 1;
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
 }
 
 .lap-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 18px 25px;
-    border-bottom: 0.5px solid #222;
-    font-size: 22px; /* Laps grandes y legibles */
-    font-variant-numeric: tabular-nums;
+    display: flex; justify-content: space-between;
+    padding: 18px 25px; border-bottom: 0.5px solid #222;
+    font-size: 22px; font-variant-numeric: tabular-nums;
 }
 
-.lap-number { color: #888; }
-
 /* =========================================
-   4. CONFIGURACIÓN E INSTRUCCIONES (SCROLLABLE)
+   6. CONFIGURACIÓN (config.html)
    ========================================= */
-.scrollable-view {
-    display: block !important;
-    overflow-y: auto !important;
-    padding: 20px;
-    padding-top: 60px !important;
-    height: 100vh !important;
-    box-sizing: border-box;
+#btnAddGroup {
+    background: var(--btn-blue) !important;
+    color: white !important;
+    padding: 20px !important;
+    border-radius: 15px !important;
+    width: 100%;
+    border: none;
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 25px;
+    cursor: pointer;
 }
 
 .group-box {
@@ -175,98 +195,51 @@ body {
 }
 
 .group-box input {
-    width: 100%;
-    padding: 15px;
-    background: #000;
-    border: 1px solid var(--gray);
-    color: #fff;
-    border-radius: 12px;
-    margin-top: 10px;
-    font-size: 17px;
-    box-sizing: border-box;
+    width: 100%; padding: 15px; background: #000; border: 1px solid var(--gray);
+    color: #fff; border-radius: 12px; margin-top: 10px; font-size: 16px; box-sizing: border-box;
 }
 
 .name-input {
-    border: none !important;
-    background: transparent !important;
-    color: var(--green) !important;
-    font-weight: bold !important;
-    font-size: 18px !important;
-    padding: 0 !important;
+    border: none !important; background: transparent !important;
+    color: var(--green) !important; font-weight: bold !important;
+    font-size: 18px !important; padding: 0 !important;
+    margin-bottom: 5px !important;
 }
 
-.button-row {
-    display: flex;
-    gap: 12px;
-    margin-top: 15px;
-}
+.button-row { display: flex; gap: 10px; margin-top: 15px; }
 
 .save-btn {
-    flex: 1;
-    padding: 12px;
-    border-radius: 10px;
-    border: none;
-    font-weight: bold;
-    font-size: 14px;
-    cursor: pointer;
-    background: var(--green);
-    color: #000;
+    flex: 1; padding: 15px; border-radius: 12px; border: none;
+    font-weight: bold; background: var(--btn-green); color: white;
 }
-
 .btn-secondary { background: var(--gray); color: #fff; }
 
 /* =========================================
-   5. NOTIFICACIÓN TOAST (FLOTANTE E INDEPENDIENTE)
+   7. TOAST FLOTANTE
    ========================================= */
 .toast-msg {
     position: fixed;
-    bottom: -100px; /* Escondido abajo */
+    bottom: -100px;
     left: 50%;
     transform: translateX(-50%);
     background: rgba(45, 45, 45, 0.98);
     color: white;
     padding: 15px 30px;
     border-radius: 30px;
-    font-size: 15px;
-    font-weight: 500;
     z-index: 999999;
     transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
     opacity: 0;
     box-shadow: 0 10px 30px rgba(0,0,0,0.8);
     border: 1px solid #444;
-    pointer-events: none;
-    white-space: nowrap;
 }
 
-.toast-msg.show {
-    bottom: 50px; /* Sube flotando */
-    opacity: 1;
-}
-
-/* =========================================
-   6. INTERFAZ SECRETA Y OTROS
-   ========================================= */
-.v-line {
-    position: fixed; top: 0; left: 50%; transform: translateX(-50%);
-    width: 45px; height: 4px; background: #3b3b3b;
-    border-radius: 0 0 5px 5px; z-index: 10000;
-}
-
-.home-trigger {
-    position: fixed; top: 0; left: 0; width: 100%; height: 60px;
-    z-index: 10001; background: transparent;
-}
-
-#settings {
-    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    background: var(--card); padding: 25px; border-radius: 20px;
-    z-index: 11000; width: 85%; text-align: center;
-    box-shadow: 0 0 50px rgba(0,0,0,0.9);
-}
+.toast-msg.show { bottom: 50px; opacity: 1; }
 
 .hidden { display: none !important; }
 
-
-.bg-menu {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+#settings {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: #1c1c1e; padding: 25px; border-radius: 20px;
+    z-index: 11000; width: 80%; text-align: center;
+    border: 1px solid var(--border);
 }
