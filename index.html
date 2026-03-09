@@ -2,144 +2,29 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-        <link rel="manifest" href="manifest.json">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="apple-mobile-web-app-title" content="Calculadora">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cronos Magic Hub</title>
-    <style>
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            /* Gradiente azul profundo y elegante */
-            background: linear-gradient(135deg, #001f3f 0%, #004a77 50%, #0074d9 100%);
-            font-family: 'Roboto', sans-serif;
-            color: white;
-            overflow: hidden;
-        }
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>CronosForce</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" type="image/png" href="icon.png">
+<meta name="theme-color" content="#000000">
 
-        .logo-container {
-            text-align: center;
-            margin-bottom: 50px;
-        }
-
-        h1 {
-            font-size: 32px;
-            font-weight: 300;
-            letter-spacing: 4px;
-            margin: 0;
-            text-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-
-        .menu-container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            width: 80%;
-            max-width: 300px;
-        }
-
-        .btn-menu {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            color: white;
-            padding: 18px;
-            font-size: 16px;
-            border-radius: 16px;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-
-        .btn-menu:active {
-            transform: scale(0.95);
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .btn-primary {
-            background: #c2e7ff;
-            color: #003355;
-            font-weight: bold;
-            border: none;
-        }
-
-        .version {
-            position: absolute;
-            bottom: 20px;
-            font-size: 10px;
-            opacity: 0.5;
-        }
-    </style>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
+</script>
 </head>
-<body>
 
-    <div class="logo-container">
-        <h1>CRONOS</h1>
-        <p style="font-weight: 100; opacity: 0.8;">Mentalismo Digital</p>
+<body class="bg-menu">
+    <div id="app">
+        <div class="logo">CRONOS FORCE</div>
+        <div class="home-container">
+            <a href="cronometro.html" class="home-btn home-btn_iniciar">INICIO</a>
+            <a href="config.html" class="home-btn home-btn_config">CONFIGURACIÓN</a>
+            <a href="instructions.html" class="home-btn home-btn_instruct">INSTRUCCIONES</a>
+        </div>
     </div>
-
-    <div class="menu-container">
-        <button class="btn-menu btn-primary" onclick="irA('calculadora.html')">INICIAR</button>
-        <button class="btn-menu" onclick="irA('configuracion.html')">CONFIGURACIÓN</button>
-        <button class="btn-menu" onclick="irA('instrucciones.html')">INSTRUCCIONES</button>
-    </div>
-
-    <div class="version">V 1.0.2 - Calcuadora Pro System</div>
-
-    <script>
-function irA(url) {
-    if(window.navigator.vibrate) window.navigator.vibrate(20);
-    
-    // Si el usuario presionó "INICIAR"
-    if (url === 'calculadora.html') {
-        // Detectamos el Sistema Operativo
-        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-        let destino;
-
-        if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-            // Es un dispositivo Apple
-            destino = 'test_calculadora_IOS.html';
-        } else {
-            // Por defecto asumimos Android o similares
-            destino = 'test_calculadora_Android.html';
-        }
-
-        console.log("Sistema detectado. Redirigiendo a: " + destino);
-        url = destino;
-    }
-
-    // Efecto de fade out
-    document.body.style.opacity = '0';
-    document.body.style.transition = 'opacity 0.5s';
-    
-    setTimeout(() => {
-        window.location.href = url;
-    }, 500);
-}
-
-
-
-
-//Código para el sw
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('Service Worker registrado', reg))
-      .catch(err => console.warn('Error al registrar SW', err));
-  });
-}
-    </script>
 </body>
-
 </html>
