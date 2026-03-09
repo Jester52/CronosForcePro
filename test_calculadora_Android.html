@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Calculadora</title>
+    <style>
+        :root {
+            --bg-android: #000000;
+            --text-main: #e5e3e1;
+            --btn-num: #1c1d1f;
+            --btn-op: #1c1d1f;
+            --accent-blue: #004a77;
+            --magic-glow: #919191;
+        }
+
+        * {
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+            outline: none;
+            touch-action: none; 
+            }
+        
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: var(--bg-android);
+            font-family: 'Roboto', sans-serif;
+            position: fixed; /* Clava la pantalla */
+            touch-action: none; /* Evita que el dedo arrastre la página */
+        }
+
+        /* BLOQUEO TOTAL DE SCROLL */
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+            outline: none;
+            touch-action: none; /* Desactiva gestos de zoom y scroll del navegador */
+        }
+
+        #magic-line {
+            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 60%; height: 2px; background-color: var(--magic-glow);
+            z-index: 100; opacity: 0; transition: opacity 0.2s; pointer-events: none;
+        }
+
+        .secret-zone {
+            position: absolute; top: 0;
+            width: 60px;
+            height: 60px;
+            z-index: 1000;
+        }
+        #config-btn { left: 0; }
+        #exit-btn { right: 0; }
+
+        .app-container {
+            height: 100%; /* Usa el 100% real del body fixed */
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .display {
+            flex: 1;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+            padding: 15px 25px;
+            min-height: 120px; /* Aseguramos espacio para que el texto no salte */
+            overflow: hidden;
+        }
+
+
+        #screen {
+            font-size: 88px;
+            font-weight: 300;
+            color: var(--text-main);
+            text-align: right;
+            white-space: nowrap;
+            line-height: 1;
+            transition: font-size 0.15s ease; /* Suaviza el encogimiento */
+        }
+
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px; /* Gap más pequeño para compactar */
+            padding: 10px 15px 35px 15px; /* Padding inferior para alejar de la barra de Android */
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            background: var(--bg-android); /* Asegura fondo negro tras los botones */
+            
+        }
+
+        button {
+            border: none;
+            border-radius: 16px; /* Bordes ligeramente menos curvos ahorran espacio visual */
+            height: 17vw; /* Altura dinámica basada en el ancho */
+            max-height: 75px; /* Límite para pantallas muy grandes */
+            font-size: 26px;
+            background-color: var(--btn-num);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-top { color: #8ab4f8; font-weight: bold; font-size: 22px; }
+
+        .btn-equal { 
+            background-color: var(--accent-blue) !important;
+            color: white !important;
+            grid-row: span 2;      /* Mantiene el estilo alargado de Android */
+            height: auto;          /* Deja que el grid controle la altura */
+            max-height: 150px;     /* Pero le pone un límite para que no se vea gigante */
+            font-size: 32px;       /* Tamaño del símbolo = */
+            border-radius: 28px;   /* Curvatura de las esquinas */
+        }
+
+        button:active { filter: brightness(1.4); }
+    </style>
+</head>
+<body>
+
+    <div id="magic-line"></div>
+    <div id="config-btn" class="secret-zone" onclick="abrirConfig()"></div>
+    <div id="exit-btn" class="secret-zone"></div>
+
+    <div class="app-container">
+        <div class="display">
+            <div id="screen">0</div>
+        </div>
+
+        <div class="numpad">
+
+            <button class="btn-mem" onclick="mem('MC')">MC</button>
+            <button class="btn-mem" onclick="mem('M+')">M+</button>
+            <button class="btn-mem" onclick="mem('M-')">M-</button>
+            <button class="btn-mem" onclick="mem('MR')">MR</button>
+
+            <button class="btn-top" onclick="reset()">C</button>
+            <button class="btn-top" onclick="op('/')">÷</button>
+            <button class="btn-top" onclick="op('*')">×</button>
+            <button class="btn-top" onclick="del()">⌫</button>
+
+            <button onclick="press('7')">7</button>
+            <button onclick="press('8')">8</button>
+            <button onclick="press('9')">9</button>
+            <button class="btn-top" onclick="op('-')">−</button>
+
+            <button onclick="press('4')">4</button>
+            <button onclick="press('5')">5</button>
+            <button onclick="press('6')">6</button>
+            <button class="btn-top" onclick="op('+')">+</button>
+
+            <button onclick="press('1')">1</button>
+            <button onclick="press('2')">2</button>
+            <button onclick="press('3')">3</button>
+            <button class="btn-equal" onclick="calc()">=</button>
+
+            <button onclick="magic()">%</button>
+            <button onclick="press('0')">0</button>
+            <button onclick="press('.')">,</button>
+        </div>
+    </div>
+
+<script>
+        let cur = "", pre = "", oper = null;
+        let n1 = 0, n2 = 0, magicMode = false, step = 0;
+        let diffArr = [], diffIdx = 0, mClicks = 0, mTimer = null;
+        let isForcing = false, memoria = 0; // isForcing indica que estamos en la fase final
+        
+        const screenEl = document.getElementById('screen');
+        const magicLine = document.getElementById('magic-line');
+
+        function ajustarTamanoFuente(t) {
+            const l = t.length;
+            screenEl.style.fontSize = (l > 13 ? 35 : l > 10 ? 45 : l > 8 ? 55 : l > 6 ? 70 : 88) + "px";
+        }
+
+        function updateDisplay(val) {
+            let f = (magicMode && step === 2 && (val === "0" || val === "")) ? "" : (val || "0");
+            ajustarTamanoFuente(f);
+            screenEl.innerText = f;
+        }
+
+        function press(v) {
+            // El usuario SIEMPRE puede presionar números. 
+            // Si estamos en fase de inyección (step 2), forzamos el dígito.
+            if (magicMode && step === 2) {
+                if (diffIdx < diffArr.length) {
+                    if (diffIdx === 0) cur = "";
+                    let n = diffArr[diffIdx];
+                    if (diffIdx === 0 && n === "0" && diffArr.length > 1) { diffIdx++; n = diffArr[diffIdx]; }
+                    cur += n; 
+                    diffIdx++;
+                    if (diffArr[diffIdx] === '.') { cur += '.'; diffIdx++; }
+                }
+            } else {
+                cur = (cur === "0" || cur === "") ? v : cur + v;
+            }
+            updateDisplay(cur);
+        }
+
+        function op(o) {
+            // Si ya estamos forzando, bloqueamos cualquier cambio de operación
+            if (isForcing) return; 
+
+            if (magicMode) {
+                step++;
+                if (step === 1) { 
+                    n1 = parseFloat(cur || 0); cur = ""; updateDisplay(""); 
+                } else if (step === 2) {
+                    n2 = parseFloat(cur || 0);
+                    // ACTIVAMOS BLOQUEO SELECTIVO
+                    isForcing = true; 
+                    let target = Number(localStorage.getItem('activeForce') || 0);
+                    let diff = (o === '*' || o === '×') ? target / (n1 * n2 || 1) : target - (n1 + n2);
+                    diffArr = (o === '*' || o === '×' ? parseFloat(diff.toFixed(6)) : diff).toString().split('');
+                    diffIdx = 0; cur = ""; updateDisplay("");
+                }
+            } else { 
+                oper = o; pre = cur; cur = ""; updateDisplay(""); 
+            }
+        }
+
+        function calc() {
+            // Si estamos en la fase de forzaje, terminamos el proceso
+            if (magicMode && step >= 2) {
+                cur = (localStorage.getItem('activeForce') || "0").toString();
+                magicMode = false; step = 0; isForcing = false;
+                if (magicLine) magicLine.style.opacity = "0";
+            } else {
+                // En modo normal, no bloqueamos el cálculo
+                try { cur = eval(pre + oper.replace('×', '*').replace('÷', '/') + (cur || "0")).toString(); } catch(e) { cur = "0"; }
+            }
+            updateDisplay(cur); pre = ""; oper = null;
+        }
+
+        // Funciones auxiliares sin cambios críticos
+        function magic() {
+            mClicks++; clearTimeout(mTimer);
+            mTimer = setTimeout(() => { mClicks = 0; }, 800);
+            if (mClicks === 2) {
+                magicMode = true; step = 0; isForcing = false;
+                if (magicLine) magicLine.style.opacity = "0.6";
+                if (navigator.vibrate) navigator.vibrate([60, 50, 60]);
+                mClicks = 0;
+            }
+        }
+
+        function reset() { cur = ""; pre = ""; oper = null; magicMode = false; step = 0; isForcing = false; if (magicLine) magicLine.style.opacity = "0"; updateDisplay("0"); }
+        function del() { if (!isForcing) { cur = cur.slice(0, -1); updateDisplay(cur); } }
+        function abrirConfig() { let v = prompt("Número a forzar:", localStorage.getItem('activeForce') || ""); if(v) localStorage.setItem('activeForce', v); }
+        function mem(t) { if(isForcing) return; let n = parseFloat(cur || 0); if(t=='MC') memoria=0; else if(t=='M+') memoria+=n; else if(t=='M-') memoria-=n; else if(t=='MR') cur=memoria.toString(); updateDisplay(cur); }
+    </script>
+
+</body>
+</html>

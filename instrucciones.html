@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="manifest" href="manifest.json">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="apple-mobile-web-app-title" content="Calculadora">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Protocolo Cronos</title>
+    <style>
+        :root { --accent: #c2e7ff; --card-bg: rgba(255, 255, 255, 0.1); }
+        body {
+            margin: 0; padding: 20px;
+            background: linear-gradient(135deg, #001f3f 0%, #004a77 100%);
+            font-family: 'Roboto', sans-serif; color: white;
+            line-height: 1.6;
+        }
+        .container { max-width: 500px; margin: 0 auto; padding-bottom: 80px; }
+        h1 { font-size: 24px; letter-spacing: 2px; text-align: center; color: var(--accent); }
+        
+        .step-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .step-num {
+            background: var(--accent);
+            color: #003355;
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center; justify-content: center;
+            font-weight: bold; margin-right: 10px;
+        }
+        h2 { font-size: 18px; margin-top: 0; display: inline; vertical-align: middle; }
+        ul { padding-left: 20px; margin: 10px 0; font-size: 14px; opacity: 0.9; }
+        li { margin-bottom: 8px; }
+        
+        .btn-back {
+            position: fixed; bottom: 20px; left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent); color: #003355;
+            border: none; padding: 15px 40px;
+            border-radius: 50px; font-weight: bold;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+            cursor: pointer;
+        }
+        .highlight { color: var(--accent); font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>GUÍA DE OPERACIÓN</h1>
+
+        <div class="step-card">
+            <div class="step-num">1</div>
+            <h2>Configuración</h2>
+            <ul>
+                <li>Accede al Menú de <span class="highlight">CONFIGURACIÓN</span>.</li>
+                <li>Define el número a forzar (Input solicitado).</li>
+                <li>Si usas presets, selecciona el de <span class="highlight">"Preparación 1 (12)"</span> o <span class="highlight">Show 1</span>.</li>
+            </ul>
+        </div>
+
+        <div class="step-card">
+            <div class="step-num">2</div>
+            <h2>Activación Discreta</h2>
+            <ul>
+                <li>Presiona el botón <span class="highlight">%</span> dos veces rápidamente.</li>
+                <li>Sentirás una <span class="highlight">vibración corta</span>: El modo mágico está armado.</li>
+                <li>Aparecerá una línea sutil en el borde superior.</li>
+            </ul>
+        </div>
+
+        <div class="step-card">
+            <div class="step-num">3</div>
+            <h2>Lógica de Compensación</h2>
+            <ul>
+                <li>Suma el <span class="highlight">N1</span> y pulsa <span class="highlight">+</span>.</li>
+                <li>Suma el <span class="highlight">N2</span> y pulsa <span class="highlight">+</span>.</li>
+                <li>Pide el <span class="highlight">N3</span>: El sistema interceptará los dígitos para completar la diferencia exacta hacia tu número forzado.</li>
+            </ul>
+        </div>
+
+        <div class="step-card">
+            <div class="step-num">4</div>
+            <h2>Clímax y Salida</h2>
+            <ul>
+                <li>Presiona <span class="highlight">=</span> para revelar el resultado.</li>
+                <li>El sistema se auto-resetea a "Modo Normal".</li>
+                <li>Para volver al Menú: Mantén pulsada la <span class="highlight">esquina superior derecha por 2s</span>.</li>
+            </ul>
+        </div>
+
+        
+    </div>
+
+    <button class="btn-back" onclick="window.location.href='index.html'">ENTENDIDO</button>
+
+</body>
+</html>

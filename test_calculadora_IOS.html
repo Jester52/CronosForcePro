@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Calculadora Pro</title>
+    <style>
+        :root { --bg-color: #000; --text-color: #fff; --btn-gray: #333; --btn-light: #a5a5a5; --btn-orange: #ff9f0a; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        
+        html, body { 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0; padding: 0; height: 100%; width: 100%;
+            overflow: hidden; position: fixed;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            height: 100vh;
+            padding-bottom: calc(env(safe-area-inset-bottom) + 20px);
+        }
+
+        .display {
+            padding: 0 30px 10px 30px;
+            text-align: right;
+            font-size: 90px;
+            font-weight: 300;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            padding: 0 18px;
+        }
+
+        button {
+            border: none;
+            border-radius: 50%;
+            aspect-ratio: 1 / 1;
+            font-size: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        button:active { filter: brightness(1.5); }
+
+        .btn-num { background-color: var(--btn-gray); color: white; }
+        .btn-spec { background-color: var(--btn-light); color: black; font-size: 28px; }
+        .btn-op { background-color: var(--btn-orange); color: white; font-size: 40px; }
+        .btn-zero { grid-column: span 2; aspect-ratio: auto; border-radius: 100px; justify-content: flex-start; padding-left: 30px; }
+
+        /* Panel Config */
+        #admin-panel { display: none; position: absolute; top: 15%; left: 50%; transform: translateX(-50%); background: #222; padding: 20px; border-radius: 20px; z-index: 1000; width: 80%; border: 1px solid #444; text-align: center; }
+        #admin-panel input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; font-size: 18px; }
+
+        #magic-line { 
+            position: absolute; 
+            top: 0; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            width: 90%; /* Antes era 60px, ahora es el 40% del ancho */
+            height: 4px; 
+            background: #616161; /* Un gris un poco más claro para que se note */
+            opacity: 0; 
+            transition: 0.3s; 
+            z-index: 1000; /* Asegura que esté por encima de todo */
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <div id="magic-line"></div>
+    <div id="btn-back-menu" style="position: absolute; top: 0; right: 0; width: 80px; height: 80px; z-index: 999;"></div>
+    <div style="position:absolute; top:0; left:0; width:80px; height:80px; z-index:999;" onclick="abrirConfig()"></div>
+
+    <div id="admin-panel">
+        <h2 style="margin:0; color:var(--btn-orange);">CONFIGURAR</h2>
+        <input type="number" id="valForzado" placeholder="Número">
+        <button onclick="cerrarConfig()" style="width:100%; height:45px; border-radius:10px; background:var(--btn-orange); color:white; font-size:18px; font-weight:bold; aspect-ratio: auto;">GUARDAR</button>
+    </div>
+
+    <div class="app-container">
+        <div class="display" id="screen">0</div>
+        
+        <div class="grid">
+            <button class="btn-spec" onclick="backspace()">⌫</button>
+            <button class="btn-spec" onclick="resetCalc()">AC</button>
+            <button class="btn-spec" onclick="handleMagicTrigger()">%</button>
+            <button class="btn-op" onclick="setOp('/')">÷</button>
+            <button class="btn-num" onclick="numClick('7')">7</button>
+            <button class="btn-num" onclick="numClick('8')">8</button>
+            <button class="btn-num" onclick="numClick('9')">9</button>
+            <button class="btn-op" onclick="setOp('*')">×</button>
+            <button class="btn-num" onclick="numClick('4')">4</button>
+            <button class="btn-num" onclick="numClick('5')">5</button>
+            <button class="btn-num" onclick="numClick('6')">6</button>
+            <button class="btn-op" onclick="setOp('-')">-</button>
+            <button class="btn-num" onclick="numClick('1')">1</button>
+            <button class="btn-num" onclick="numClick('2')">2</button>
+            <button class="btn-num" onclick="numClick('3')">3</button>
+            <button class="btn-op" onclick="setOp('+')">+</button>
+            <button class="btn-num" onclick="toggleSign()">+/-</button>
+            <button class="btn-num" onclick="numClick('0')">0</button>
+            <button class="btn-num" onclick="numClick('.')">,</button>
+            <button class="btn-op" onclick="calcular()">=</button>
+        </div>
+    </div>
+
+<script>
+    let cur = "", pre = "", oper = null;
+    let n1 = 0, n2 = 0, magicMode = false, step = 0;
+    let diffArr = [], diffIdx = 0, mClicks = 0, mTimer = null;
+    let currentOper = ""; 
+    let isForcing = false; // Bloqueo de seguridad
+
+    const screenEl = document.getElementById('screen');
+    const magicIndicator = document.getElementById('magic-line');
+
+    function ajustarTamanoFuente(texto) {
+        const largo = texto.length;
+        let nuevoTamano = 90;
+        if (largo > 6 && largo <= 8) nuevoTamano = 70;
+        else if (largo > 8 && largo <= 10) nuevoTamano = 55;
+        else if (largo > 10 && largo <= 13) nuevoTamano = 45;
+        else if (largo > 13) nuevoTamano = 35;
+        screenEl.style.fontSize = nuevoTamano + "px";
+    }
+
+    function updateDisplay(val) {
+        let textoFinal = val || "0";
+        if (magicMode && step === 2 && (val === "" || val === "0")) textoFinal = "";
+        ajustarTamanoFuente(textoFinal);
+        screenEl.innerText = textoFinal;
+    }
+
+    function numClick(v) {
+        if (magicMode && step === 2) {
+            if (diffIdx < diffArr.length) {
+                if (diffIdx === 0) cur = ""; 
+                let nextChar = diffArr[diffIdx];
+                if (diffIdx === 0 && nextChar === "0" && diffArr.length > 1) { diffIdx++; nextChar = diffArr[diffIdx]; }
+                cur += nextChar;
+                diffIdx++;
+                if (diffArr[diffIdx] === '.') { cur += '.'; diffIdx++; }
+            }
+        } else {
+            cur = (cur === "0" || cur === "") ? v : cur + v;
+        }
+        updateDisplay(cur);
+    }
+
+    function setOp(o) {
+        // Bloqueo: Si estamos forzando, no permitir cambiar operacion
+        if (isForcing) return; 
+
+        currentOper = o; 
+        if (magicMode) {
+            step++;
+            if (step === 1) { 
+                n1 = parseFloat(cur || 0); cur = ""; updateDisplay(""); 
+            } else if (step === 2) {
+                n2 = parseFloat(cur || 0);
+                isForcing = true; // --- ACTIVAR BLOQUEO ---
+                (currentOper === '*' || currentOper === '×') ? prepararForzajePorProducto() : prepararForzajePorSuma();
+                cur = ""; updateDisplay("");
+            }
+        } else { 
+            oper = o; pre = cur; cur = ""; updateDisplay("");
+        }
+    }
+
+    function calcular() {
+        if (magicMode && step >= 2) {
+            cur = (localStorage.getItem('activeForce') || "0").toString();
+            magicMode = false; step = 0; isForcing = false; // --- DESBLOQUEO ---
+            if (magicIndicator) magicIndicator.style.opacity = "0";
+        } else {
+            if (isForcing) return; // Bloqueo manual
+            try { 
+                let expression = pre + oper.replace('×', '*').replace('÷', '/') + (cur || "0");
+                cur = eval(expression).toString(); 
+            } catch(e) { cur = "0"; }
+        }
+        updateDisplay(cur);
+        pre = ""; oper = null;
+    }
+
+    // --- FUNCIONES MÁGICAS Y UTILIDADES ---
+
+    function prepararForzajePorSuma() {
+        let target = Number(localStorage.getItem('activeForce') || 0);
+        let diff = target - (n1 + n2);
+        diffArr = diff.toString().split('');
+        diffIdx = 0;
+    }
+
+    function prepararForzajePorProducto() {
+        let target = Number(localStorage.getItem('activeForce') || 0);
+        let diff = target / (n1 * n2 || 1);
+        diffArr = parseFloat(diff.toFixed(6)).toString().split('');
+        diffIdx = 0;
+    }
+
+    function handleMagicTrigger() {
+        mClicks++;
+        clearTimeout(mTimer);
+        mTimer = setTimeout(() => { mClicks = 0; }, 800);
+        if (mClicks === 2) {
+            magicMode = true; step = 0; isForcing = false;
+            if (magicIndicator) magicIndicator.style.opacity = "0.5";
+            if (navigator.vibrate) navigator.vibrate([40, 40]);
+            mClicks = 0;
+        }
+    }
+
+    function resetCalc() { 
+        cur = ""; pre = ""; oper = null; magicMode = false; step = 0; isForcing = false;
+        if (magicIndicator) magicIndicator.style.opacity = "0"; 
+        updateDisplay("0"); 
+    }
+
+    function backspace() { if (!isForcing) { cur = cur.slice(0, -1); updateDisplay(cur); } }
+    
+    function abrirConfig() {
+        document.getElementById('admin-panel').style.display = 'block';
+        document.getElementById('valForzado').value = localStorage.getItem('activeForce') || "";
+    }
+
+    function cerrarConfig() {
+        localStorage.setItem('activeForce', document.getElementById('valForzado').value);
+        document.getElementById('admin-panel').style.display = 'none';
+    }
+
+    function toggleSign() { if (!isForcing) { cur = (parseFloat(cur) * -1).toString(); updateDisplay(cur); } }
+</script>
+
+
+</body>
+</html>

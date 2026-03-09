@@ -1,37 +1,26 @@
-const CACHE_NAME = 'cronosforce-final-v1';
-
-const ASSETS = [
-  './cronometro.html',
+const CACHE_NAME = 'cronos-magic-v1';
+const urlsToCache = [
+  './',
   './index.html',
-  './config.html',
-  './instructions.html',
-  './style.css',
-  './script.js',
-  './config.js',
-  './manifest.json',
-  './icon.png'
+  './test_calculadora_Android.html',
+  './test_calculadora_IOS.html',
+  './configuracion.html',
+  './instrucciones.html',
+  './manifest.json'
 ];
 
-self.addEventListener('install', (event) => {
+// Instalación del Service Worker
+self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(urlsToCache))
   );
-  self.skipWaiting();
 });
 
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
-      );
-    })
-  );
-  self.clients.claim();
-});
-
-self.addEventListener('fetch', (event) => {
+// Estrategia: Buscar en caché, si no hay, ir a la red
+self.addEventListener('fetch', event => {
   event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
+    caches.match(event.request)
+      .then(response => response || fetch(event.request))
   );
 });

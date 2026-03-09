@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Configuración - Cronos</title>
+    <style>
+        /* --- BASE UNIFICADA --- */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            margin: 0; padding: 20px; min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
+            background: linear-gradient(135deg, #001f3f 0%, #004a77 50%, #0074d9 100%);
+            background-attachment: fixed;
+            font-family: 'Roboto', sans-serif; color: white;
+        }
+
+        h1 { font-size: 28px; font-weight: 300; letter-spacing: 4px; margin-bottom: 30px; text-transform: uppercase; }
+
+        /* --- CARDS --- */
+        .preset-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            width: 100%; max-width: 380px;
+            padding: 15px 20px; margin-bottom: 12px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .preset-info b { font-size: 18px; display: block; color: white; font-weight: 400; }
+        .preset-info span { color: #c2e7ff; font-size: 14px; opacity: 0.9; }
+
+        /* --- BOTONES --- */
+        .btn-launch {
+            background: #c2e7ff; color: #003355; border: none;
+            padding: 10px 15px; border-radius: 12px; font-weight: bold;
+            font-size: 13px; cursor: pointer; text-transform: uppercase;
+        }
+
+        .btn-icon {
+            background: rgba(255,255,255,0.1); border: none; color: white;
+            padding: 8px; border-radius: 10px; cursor: pointer; margin-left: 5px;
+            font-size: 14px;
+        }
+
+        .fab-add {
+            position: fixed; bottom: 30px; right: 30px;
+            background: #c2e7ff; width: 60px; height: 60px;
+            border-radius: 20px; display: flex; align-items: center;
+            justify-content: center; font-size: 30px; color: #003355;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4); border: none; z-index: 10;
+        }
+
+        /* --- MODAL --- */
+        #modal {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px); align-items: center; justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 30px; border-radius: 25px; width: 85%; max-width: 320px;
+            text-align: center;
+        }
+
+        input {
+            width: 100%; padding: 14px; margin: 10px 0;
+            border-radius: 12px; border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(0,0,0,0.3); color: white; font-size: 16px;
+        }
+
+        .btn-back {
+            margin-top: 10px; background: transparent; color: white;
+            border: 1px solid rgba(255,255,255,0.4); padding: 12px 25px;
+            border-radius: 50px; cursor: pointer; font-size: 14px;
+        }
+
+        .date-section { width: 100%; max-width: 380px; margin-bottom: 25px; }
+    </style>
+</head>
+<body>
+
+    <h1>PRESETS</h1>
+
+    <div class="date-section">
+        <button class="btn-launch" style="width: 100%; padding: 15px; background: rgba(194, 231, 255, 0.2); color: white; border: 1px dashed #c2e7ff;" onclick="forzarFechaHoy()">
+            📅 FORZAR FECHA DE HOY
+        </button>
+    </div>
+
+    <div id="lista-presets" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+        </div>
+
+    <button class="btn-back" onclick="window.location.href='index.html'">VOLVER AL MENÚ</button>
+
+    <button class="fab-add" onclick="abrirModal()">+</button>
+
+    <div id="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle" style="margin-top:0; color:#c2e7ff;">NUEVO FORZAJE</h3>
+            <input type="hidden" id="editIndex">
+            <input type="text" id="nombreF" placeholder="Nombre (ej: Show 1)">
+            <input type="number" id="valorF" placeholder="Número">
+            <button class="btn-launch" style="width:100%; margin-top:10px;" onclick="guardarPreset()">GUARDAR</button>
+            <button class="btn-back" style="border:none; width:100%;" onclick="cerrarModal()">CANCELAR</button>
+        </div>
+    </div>
+
+    <script>
+        let presets = JSON.parse(localStorage.getItem('magicPresets')) || [];
+
+        function renderPresets() {
+            const contenedor = document.getElementById('lista-presets');
+            contenedor.innerHTML = '';
+            presets.forEach((p, index) => {
+                contenedor.innerHTML += `
+                    <div class="preset-card">
+                        <div class="preset-info">
+                            <b>${p.nombre}</b>
+                            <span>${p.valor}</span>
+                        </div>
+                        <div style="display:flex; align-items:center;">
+                            <button class="btn-launch" onclick="lanzar('${p.valor}')">USAR</button>
+                            <button class="btn-icon" onclick="editarPreset(${index})">✏️</button>
+                            <button class="btn-icon" onclick="eliminarPreset(${index})">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function abrirModal(index = -1) {
+            if (index > -1) {
+                document.getElementById('modalTitle').innerText = "EDITAR FORZAJE";
+                document.getElementById('editIndex').value = index;
+                document.getElementById('nombreF').value = presets[index].nombre;
+                document.getElementById('valorF').value = presets[index].valor;
+            } else {
+                document.getElementById('modalTitle').innerText = "NUEVO FORZAJE";
+                document.getElementById('editIndex').value = -1;
+                document.getElementById('nombreF').value = '';
+                document.getElementById('valorF').value = '';
+            }
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function cerrarModal() { document.getElementById('modal').style.display = 'none'; }
+
+        function guardarPreset() {
+            const nombre = document.getElementById('nombreF').value;
+            const valor = document.getElementById('valorF').value;
+            const index = document.getElementById('editIndex').value;
+
+            if (!nombre || !valor) return alert("Completa los datos");
+
+            if (index > -1) {
+                presets[index] = { nombre, valor };
+            } else {
+                presets.push({ nombre, valor });
+            }
+
+            localStorage.setItem('magicPresets', JSON.stringify(presets));
+            cerrarModal();
+            renderPresets();
+        }
+
+        function eliminarPreset(index) {
+            if (confirm("¿Eliminar este forzaje?")) {
+                presets.splice(index, 1);
+                localStorage.setItem('magicPresets', JSON.stringify(presets));
+                renderPresets();
+            }
+        }
+
+        function editarPreset(index) {
+            abrirModal(index);
+        }
+
+function lanzar(valor) {
+    localStorage.setItem('activeForce', valor);
+    console.log("Forzaje activo establecido en: " + valor); // Para pruebas
+    if(navigator.vibrate) navigator.vibrate(40);
+    window.location.href = 'index.html';
+}
+
+        function forzarFechaHoy() {
+            const hoy = new Date();
+            const dia = String(hoy.getDate()).padStart(2, '0');
+            const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+            const anio = String(hoy.getFullYear()).slice(-2);
+            const fechaForzada = dia + mes + anio;
+            
+            localStorage.setItem('activeForce', fechaForzada);
+            if(navigator.vibrate) navigator.vibrate([30, 50, 30]);
+            alert("Forzaje de FECHA activado: " + fechaForzada);
+            window.location.href = 'index.html';
+        }
+
+        // Carga inicial
+        renderPresets();
+    </script>
+</body>
+</html>

@@ -1,25 +1,21 @@
 {
-  "name": "CronosForcePro",
-  "short_name": "CronosForce",
-  "description": "Herramienta profesional de mentalismo",
-  "id": "/cronometro.html",
-  "start_url": "./cronometro.html",
-  "scope": "./",
+  "name": "Ccalculadora Pro",
+  "short_name": "CCalculadora",
+  "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#000000",
+  "background_color": "#001f3f",
+  "theme_color": "#001f3f",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "icon.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
     },
     {
-      "src": "icon.png",
+      "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
+      "type": "image/png"
     }
   ]
 }
