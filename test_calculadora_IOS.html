@@ -5,6 +5,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>Calculadora Pro</title>
     <style>
         :root { --bg-color: #000; --text-color: #fff; --btn-gray: #333; --btn-light: #a5a5a5; --btn-orange: #ff9f0a; }
@@ -65,12 +66,13 @@
             top: 0; 
             left: 50%; 
             transform: translateX(-50%); 
-            width: 90%; /* Antes era 60px, ahora es el 40% del ancho */
-            height: 4px; 
-            background: #616161; /* Un gris un poco más claro para que se note */
+            width: 90%; 
+            height: 3px; /* Un poco más gruesa para verla bien */
+            background: #7e7e7e; /* Usamos el color naranja de tus botones para que destaque */
             opacity: 0; 
-            transition: 0.3s; 
-            z-index: 1000; /* Asegura que esté por encima de todo */
+            transition: opacity 0.3s; 
+            z-index: 9999; /* Máxima prioridad para que siempre se vea */
+            pointer-events: none; /* Muy importante: esto permite que los clics pasen a través de la línea */
         }
 
 
@@ -79,7 +81,9 @@
 <body>
 
     <div id="magic-line"></div>
-    <div id="btn-back-menu" style="position: absolute; top: 0; right: 0; width: 80px; height: 80px; z-index: 999;"></div>
+   <div id="btn-back-menu" 
+     style="position: absolute; top: 0; right: 0; width: 80px; height: 80px; z-index: 999; cursor: pointer;"onclick="window.location.href='index.html'">
+</div>
     <div style="position:absolute; top:0; left:0; width:80px; height:80px; z-index:999;" onclick="abrirConfig()"></div>
 
     <div id="admin-panel">
@@ -142,49 +146,48 @@
         screenEl.innerText = textoFinal;
     }
 
-    function numClick(v) {
+function numClick(v) {
         if (magicMode && step === 2) {
+            // --- LÓGICA DE INYECCIÓN FORZADA (SIMPLIFICADA) ---
+            // Como el número en localStorage ya está "limpio", 
+            // simplemente inyectamos lo que sigue en el array.
             if (diffIdx < diffArr.length) {
                 if (diffIdx === 0) cur = ""; 
-                let nextChar = diffArr[diffIdx];
-                if (diffIdx === 0 && nextChar === "0" && diffArr.length > 1) { diffIdx++; nextChar = diffArr[diffIdx]; }
-                cur += nextChar;
+                
+                cur += diffArr[diffIdx];
                 diffIdx++;
-                if (diffArr[diffIdx] === '.') { cur += '.'; diffIdx++; }
+
+                // Si encontramos un punto, lo añadimos
+                if (diffArr[diffIdx] === '.') {
+                    cur += '.';
+                    diffIdx++;
+                }
             }
         } else {
-            cur = (cur === "0" || cur === "") ? v : cur + v;
+            // --- LÓGICA DE ENTRADA MANUAL ---
+            if (cur === "0" && v !== ".") {
+                cur = v;
+            } else {
+                cur = (cur === "0" && v === ".") ? "0." : (cur === "" ? v : cur + v);
+            }
         }
         updateDisplay(cur);
     }
 
-    function setOp(o) {
-        // Bloqueo: Si estamos forzando, no permitir cambiar operacion
-        if (isForcing) return; 
 
-        currentOper = o; 
-        if (magicMode) {
-            step++;
-            if (step === 1) { 
-                n1 = parseFloat(cur || 0); cur = ""; updateDisplay(""); 
-            } else if (step === 2) {
-                n2 = parseFloat(cur || 0);
-                isForcing = true; // --- ACTIVAR BLOQUEO ---
-                (currentOper === '*' || currentOper === '×') ? prepararForzajePorProducto() : prepararForzajePorSuma();
-                cur = ""; updateDisplay("");
-            }
-        } else { 
-            oper = o; pre = cur; cur = ""; updateDisplay("");
-        }
-    }
+
 
     function calcular() {
         if (magicMode && step >= 2) {
-            cur = (localStorage.getItem('activeForce') || "0").toString();
-            magicMode = false; step = 0; isForcing = false; // --- DESBLOQUEO ---
+            let res = getForcedValue();
+            // Limpieza de cero para el display final (si empieza por 0 lo quita)
+            if (res.startsWith('0') && res.length > 1 && !res.includes('.')) res = res.substring(1);
+            
+            cur = res;
+            magicMode = false; step = 0; isForcing = false;
             if (magicIndicator) magicIndicator.style.opacity = "0";
         } else {
-            if (isForcing) return; // Bloqueo manual
+            if (isForcing) return; 
             try { 
                 let expression = pre + oper.replace('×', '*').replace('÷', '/') + (cur || "0");
                 cur = eval(expression).toString(); 
@@ -196,38 +199,127 @@
 
     // --- FUNCIONES MÁGICAS Y UTILIDADES ---
 
-    function prepararForzajePorSuma() {
-        let target = Number(localStorage.getItem('activeForce') || 0);
-        let diff = target - (n1 + n2);
-        diffArr = diff.toString().split('');
-        diffIdx = 0;
-    }
 
-    function prepararForzajePorProducto() {
-        let target = Number(localStorage.getItem('activeForce') || 0);
-        let diff = target / (n1 * n2 || 1);
-        diffArr = parseFloat(diff.toFixed(6)).toString().split('');
-        diffIdx = 0;
-    }
+// NUEVA FUNCIÓN: Lógica inteligente de fecha y hora
+function getForcedValue() {
+    let val = localStorage.getItem('activeForce') || "0";
+    if (val.toLowerCase() === "fecha" || val.toLowerCase() === "todo") {
+        let now = new Date();
+        let d = String(now.getDate()).padStart(2, '0');
+        let m = String(now.getMonth() + 1).padStart(2, '0');
+        let fullYear = String(now.getFullYear());
 
-    function handleMagicTrigger() {
-        mClicks++;
-        clearTimeout(mTimer);
-        mTimer = setTimeout(() => { mClicks = 0; }, 800);
-        if (mClicks === 2) {
-            magicMode = true; step = 0; isForcing = false;
-            if (magicIndicator) magicIndicator.style.opacity = "0.5";
-            if (navigator.vibrate) navigator.vibrate([40, 40]);
-            mClicks = 0;
+        if (val.toLowerCase() === "fecha") {
+            return d + m + fullYear; // Ejemplo: 18032026
+        } else {
+            let shortYear = fullYear.slice(-2); // "26"
+            let hrs12 = now.getHours() % 12 || 12; // Formato 12h
+            let h = String(hrs12).padStart(2, '0');
+            let min = String(now.getMinutes()).padStart(2, '0');
+            return d + m + shortYear + h + min; // Ejemplo: 1803260835
         }
     }
+    return val;
+}
 
-    function resetCalc() { 
-        cur = ""; pre = ""; oper = null; magicMode = false; step = 0; isForcing = false;
-        if (magicIndicator) magicIndicator.style.opacity = "0"; 
-        updateDisplay("0"); 
+function prepararForzajePorSuma() {
+    let target = Number(getForcedValue());
+    // Fórmula estándar de suma: X = Target - N1 - N2
+    let diff = target - n1 - n2;
+    diffArr = diff.toString().split('');
+    diffIdx = 0;
+}
+
+function prepararForzajePorProducto() {
+    let target = Number(getForcedValue());
+    // TU NUEVA FÓRMULA: X = Target / (N1 + N2)
+    let divisor = n1 + n2;
+    
+    // Evitamos división por cero si la suma es 0
+    let resultadoFactor = (divisor === 0) ? target : target / divisor;
+    
+    // Usamos 6 decimales para que al multiplicar de vuelta sea exacto
+    diffArr = parseFloat(resultadoFactor.toFixed(6)).toString().split('');
+    diffIdx = 0;
+}
+
+function handleMagicTrigger() {
+    // SEGURIDAD: Si ya estamos forzando, el botón % queda desactivado
+    if (isForcing) return; 
+
+    mClicks++;
+    clearTimeout(mTimer);
+    mTimer = setTimeout(() => { mClicks = 0; }, 800);
+    
+    if (mClicks === 2) {
+        magicMode = true; 
+        step = 0; 
+        isForcing = false;
+        if (magicIndicator) magicIndicator.style.opacity = "1";
+        if (navigator.vibrate) navigator.vibrate(100);
+        mClicks = 0;
     }
+}
 
+function resetCalc() { 
+    // SEGURIDAD: No se puede resetear mientras el forzaje está en curso
+    if (isForcing) return; 
+
+    cur = ""; pre = ""; oper = null; magicMode = false; step = 0; isForcing = false;
+    if (magicIndicator) magicIndicator.style.opacity = "0"; 
+    updateDisplay("0"); 
+}
+
+function backspace() { 
+    // SEGURIDAD: Bloqueamos el botón de borrar durante el forzaje
+    if (isForcing) return; 
+
+    cur = cur.slice(0, -1); 
+    updateDisplay(cur); 
+}
+
+function toggleSign() { 
+    // SEGURIDAD: Bloqueamos el cambio de signo (+/-)
+    if (isForcing) return; 
+
+    cur = (parseFloat(cur) * -1).toString(); 
+    updateDisplay(cur); 
+}
+
+function setOp(o) {
+    // SEGURIDAD: Si ya estamos inyectando el tercer número, los operadores no hacen nada
+    if (isForcing) return; 
+
+    currentOper = o; 
+    if (magicMode) {
+        step++;
+        if (step === 1) { 
+            n1 = parseFloat(cur || 0); 
+            cur = ""; 
+            updateDisplay(""); 
+        } else if (step === 2) {
+            n2 = parseFloat(cur || 0);
+            
+            // ACTIVACIÓN DEL BLOQUEO: A partir de aquí, solo funcionan los números y el "="
+            isForcing = true; 
+            
+            // Aplicamos tu fórmula: X = Target / (N1 + N2)
+            if (currentOper === '*' || currentOper === '×') {
+                prepararForzajePorProducto();
+            } else {
+                prepararForzajePorSuma();
+            }
+            
+            cur = ""; 
+            updateDisplay("");
+        }
+    } else { 
+        oper = o; 
+        pre = cur; 
+        cur = ""; 
+        updateDisplay("");
+    }
+}
     function backspace() { if (!isForcing) { cur = cur.slice(0, -1); updateDisplay(cur); } }
     
     function abrirConfig() {
@@ -241,6 +333,17 @@
     }
 
     function toggleSign() { if (!isForcing) { cur = (parseFloat(cur) * -1).toString(); updateDisplay(cur); } }
+
+    // Empuja un estado extra al historial al cargar
+    window.history.pushState(null, null, window.location.href);
+
+    // Cuando detecte el gesto de "atrás", lo ignora y recarga
+    window.addEventListener('popstate', function () {
+        window.history.pushState(null, null, window.location.href);
+        // Opcional: una pequeña vibración para avisar que está bloqueado
+        if (navigator.vibrate) navigator.vibrate(50);
+    });
+
 </script>
 
 
